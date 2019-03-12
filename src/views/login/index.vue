@@ -1,38 +1,42 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-      <h3 class="title">vue-admin-template</h3>
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="username" />
-      </el-form-item>
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :type="pwdType"
-          v-model="loginForm.password"
-          name="password"
-          auto-complete="on"
-          placeholder="password"
-          @keyup.enter.native="handleLogin" />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="pwdType === 'password' ? 'eye' : 'eye-open'" />
-        </span>
-      </el-form-item>
-      <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          Sign in
-        </el-button>
-      </el-form-item>
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: admin</span>
-      </div>
-    </el-form>
+    <transition name="card">
+      <el-card class="login-card" v-if="show">
+        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+          <h3 class="title">vue-admin-template</h3>
+          <el-form-item prop="username">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="username" />
+          </el-form-item>
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :type="pwdType"
+              v-model="loginForm.password"
+              name="password"
+              auto-complete="on"
+              placeholder="password"
+              @keyup.enter.native="handleLogin" />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="pwdType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+          <el-form-item>
+            <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
+              Sign in
+            </el-button>
+          </el-form-item>
+          <div class="tips">
+            <span style="margin-right:20px;">username: admin</span>
+            <span> password: admin</span>
+          </div>
+        </el-form>
+      </el-card>
+    </transition>
   </div>
 </template>
 
@@ -57,6 +61,7 @@ export default {
       }
     }
     return {
+      show: true,
       loginForm: {
         username: 'admin',
         password: 'admin'
@@ -87,28 +92,29 @@ export default {
       }
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('Login', this.loginForm).then(() => {
-            this.loading = false
-            this.$router.push({ path: this.redirect || '/' })
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+      // this.$refs.loginForm.validate(valid => {
+      //   if (valid) {
+      //     this.loading = true
+      //     this.$store.dispatch('Login', this.loginForm).then(() => {
+      //       this.loading = false
+      //       this.$router.push({ path: this.redirect || '/' })
+      //     }).catch(() => {
+      //       this.loading = false
+      //     })
+      //   } else {
+      //     console.log('error submit!!')
+      //     return false
+      //   }
+      // })
+      this.show = !this.show
     }
   }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-$bg:#2d3a4b;
-$light_gray:#eee;
+$bg:#eeeeeed8;
+$light_gray:#303030;
 
 /* reset element-ui css */
 .login-container {
@@ -141,16 +147,50 @@ $light_gray:#eee;
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-$bg:#2d3a4b;
+$bg:#eeeeeed8;
 $dark_gray:#889aa4;
-$light_gray:#eee;
+$light_gray:#303030;
+
+@-webkit-keyframes show-login-card {
+  0% {top: 10%; left: 90%; -ms-transform: translate(-10%, -90%); transform: translate(-10%, -90%); border-radius: 400px; width: 40px; height: 40px;}
+  25% {top: 30%; left: 80%; -ms-transform: translate(-30%, -80%); transform: translate(-30%, -80%); border-radius: 300px; width: 100px; height: 320px;}
+  50% {top: 50%; left: 70%; -ms-transform: translate(-50%, -70%); transform: translate(-50%, -70%); border-radius: 150px; width: 200px; height: 560px;}
+  75% {top: 60%; left: 60%; -ms-transform: translate(-60%, -60%); transform: translate(-60%, -60%); border-radius: 80px; width: 300px; height: 690px;}
+  100% {top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); border-radius: 20px; width: 600px; height: 800px;}
+}
+
+.login-card {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  width: 600px;
+  height: 800px;
+  -ms-transform: translate(-50%, -50%);
+  margin: 0;
+  position: absolute;
+}
+
+.card-leave-active {
+  -webkit-animation-name: show-login-card;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-duration: 0.48s;
+  -webkit-animation-fill-mode: forwards;
+  animation-direction: reverse;
+}
+.card-enter-active {
+  -webkit-animation-name: show-login-card;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-duration: 0.48s;
+  -webkit-animation-fill-mode: forwards;
+}
 .login-container {
-  position: fixed;
+  position: relative;
   height: 100%;
   width: 100%;
   background-color: $bg;
   .login-form {
-    position: absolute;
+    position: relative;
     left: 0;
     right: 0;
     width: 520px;
@@ -160,7 +200,7 @@ $light_gray:#eee;
   }
   .tips {
     font-size: 14px;
-    color: #fff;
+    color: #ffffff;
     margin-bottom: 10px;
     span {
       &:first-of-type {
